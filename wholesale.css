@@ -1,0 +1,43 @@
+@font-face {
+    font-family: DiaRegular;
+    src: url('https://www.vabienusa.com/wp-content/fonts/Dia-Regular.otf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.maintenance {
+    font-family: DiaRegular;
+}
+
+.maintenance h2.heading {
+    font-size: 36px;
+    margin-bottom: 50px;
+}
+
+.maintenance input {
+    display: inline-flex;
+    border: 1px solid #e5e5e5;
+    padding: 0 16px;
+    height: 42px;
+    line-height: 42px;
+    margin-bottom: 20px;
+    color: #737373;
+    font-size: 14px;
+    background: #fff;
+    max-width: 100%;
+    outline: 0;
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+}
+
+.maintenance label {
+    display: block;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
