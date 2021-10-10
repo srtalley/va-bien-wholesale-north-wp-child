@@ -18,8 +18,18 @@ class WholeSaleExtensions {
 
 		add_action( 'content_section', array( $this, 'custom_login_form' ) );
 		add_action( 'load_custom_style', array( $this, 'add_custom_login_style' ), 20 );
-	}
 
+		// The code for displaying WooCommerce Product Custom Fields
+		add_action( 'woocommerce_product_options_sku', array( $this, 'woocommerce_product_custom_price_fields') ); 
+
+		// Following code Saves  WooCommerce Product Custom Fields
+		add_action( 'woocommerce_process_product_meta', array( $this, 'woocommerce_product_custom_price_fields_save') );
+
+		add_filter( 'woocommerce_get_price_html', array( $this, 'vb_change_product_price_html'), 10, 2 );
+		add_filter( 'woocommerce_cart_item_price', array( $this, 'vb_change_product_price_cart'), 10, 3 );
+
+	}
+	
 	public static function init() {
 		if ( is_null( self::$_instance ) ) {
 			self::$_instance = new self();
@@ -33,6 +43,7 @@ class WholeSaleExtensions {
 		global $post;
 
 		the_content();
+		echo '<div class="vb-price-description"><p>' . get_post_meta($post->ID, '_vb_wholesale_price_description', true) . '</p></div>';
 
 	}
 
@@ -105,6 +116,58 @@ class WholeSaleExtensions {
 		) );
 	}
 
+	/**
+	 * Display a custom field
+	 */
+	public function woocommerce_product_custom_price_fields () {
+		global $woocommerce, $post;
+		echo '<div class="vb_wholesale_price_description">';
+		// This function has the logic of creating custom field
+		//  This function includes input text field, Text area and number field
+		// Custom Product Text Field
+		woocommerce_wp_text_input(
+			array(
+			  'id'          => '_vb_wholesale_price_description',
+			  'label'       => __( 'Wholesale Price Description:', 'woocommerce' ),
+			  'placeholder' => '',
+			  'desc_tip'    => 'true'
+			)
+		);
+		echo '</div>';
+	}
+	/**
+	 * Save the custom field data
+	 */
+	public function woocommerce_product_custom_price_fields_save($post_id) {
+    // Custom Product Text Field
+    $woocommerce_vb_wholesale_price_description = $_POST['_vb_wholesale_price_description'];
+    if (!empty($woocommerce_vb_wholesale_price_description))
+        update_post_meta($post_id, '_vb_wholesale_price_description', esc_attr($woocommerce_vb_wholesale_price_description));
+	}
+
+	/**
+	 * Change the price display on product pages and shop
+	 */
+	public function vb_change_product_price_html( $price_html, $product ) {
+
+		$wholesale_price_description = get_post_meta($product->get_id(), '_vb_wholesale_price_description', true);
+		if ( $wholesale_price_description != '' ) {
+			$price_html = '<span class="amount vb-custom-price-description">' . $wholesale_price_description . '</span>';
+		}
+		return $price_html;
+	}
+	
+	/**
+	 * Change the price display in the cart
+	 */
+	public function vb_change_product_price_cart( $price, $cart_item, $cart_item_key ) {
+
+		$wholesale_price_description = get_post_meta($cart_item['product_id'], '_vb_wholesale_price_description', true);
+		if ( $wholesale_price_description != '' ) {
+			$price = $wholesale_price_description;
+		}
+		return $price;
+	}
 }
 
 return WholeSaleExtensions::init();
